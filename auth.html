@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlumniConnect - Auth</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d1117;
+            color: #c9d1d9;
+        }
+
+        .auth-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            min-height: 100vh;
+        }
+
+        @media (min-width: 768px) {
+            .auth-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <main class="auth-container">
+        <!-- Left Side: Welcome Message -->
+        <div class="relative bg-gradient-to-r from-blue-900 to-indigo-900 flex flex-col items-center justify-center p-8 text-center text-white">
+            <!-- Diagonal line effect -->
+            <div class="absolute inset-0 z-0 overflow-hidden">
+                <div class="absolute w-full h-full transform -skew-y-12 bg-indigo-800 opacity-20 origin-top-right"></div>
+                <div class="absolute w-full h-full transform skew-y-12 bg-blue-800 opacity-20 origin-bottom-left"></div>
+            </div>
+            
+            <div class="relative z-10 p-4 rounded-xl">
+                <h1 id="welcome-header" class="text-4xl md:text-5xl font-extrabold mb-4">WELCOME BACK!</h1>
+                <p id="welcome-message" class="text-lg md:text-xl font-light">Hope you and your family have a great day.</p>
+            </div>
+        </div>
+
+        <!-- Right Side: Forms -->
+        <div class="bg-gray-900 flex flex-col items-center justify-center p-8">
+            <div class="w-full max-w-sm">
+                <!-- Login Form -->
+                <div id="login-form-container" class="space-y-6">
+                    <h2 class="text-3xl font-bold text-center text-white">Login</h2>
+                    <form id="login-form" class="space-y-4">
+                        <div>
+                            <label for="login-email" class="block text-sm font-medium text-gray-400">Email Address</label>
+                            <input type="email" id="login-email" class="mt-1 block w-full rounded-lg bg-gray-800 border-gray-700 text-white focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-3">
+                        </div>
+                        <div>
+                            <label for="login-password" class="block text-sm font-medium text-gray-400">Password</label>
+                            <input type="password" id="login-password" class="mt-1 block w-full rounded-lg bg-gray-800 border-gray-700 text-white focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-3">
+                        </div>
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-colors">
+                            Log In
+                        </button>
+                    </form>
+                    <p id="login-message-box" class="mt-4 text-sm text-center text-gray-400"></p>
+                    <p class="text-center text-gray-400 text-sm mt-4">
+                        Don't have an account? <a href="#" id="show-signup-link" class="text-indigo-400 hover:text-indigo-300 font-semibold">Sign Up</a>
+                    </p>
+                </div>
+
+                <!-- Sign Up Form (hidden by default) -->
+                <div id="signup-form-container" class="space-y-6 hidden">
+                    <h2 class="text-3xl font-bold text-center text-white">Sign Up</h2>
+                    <form id="signup-form" class="space-y-4">
+                        <div>
+                            <label for="signup-username" class="block text-sm font-medium text-gray-400">Username</label>
+                            <input type="text" id="signup-username" class="mt-1 block w-full rounded-lg bg-gray-800 border-gray-700 text-white focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-3">
+                        </div>
+                        <div>
+                            <label for="signup-email" class="block text-sm font-medium text-gray-400">Email Address</label>
+                            <input type="email" id="signup-email" class="mt-1 block w-full rounded-lg bg-gray-800 border-gray-700 text-white focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-3">
+                        </div>
+                        <div>
+                            <label for="signup-password" class="block text-sm font-medium text-gray-400">Password</label>
+                            <input type="password" id="signup-password" class="mt-1 block w-full rounded-lg bg-gray-800 border-gray-700 text-white focus:border-indigo-500 focus:ring focus:ring-indigo-500 focus:ring-opacity-50 p-3">
+                        </div>
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-lg shadow-md transition-colors">
+                            Sign Up
+                        </button>
+                    </form>
+                    <p id="signup-message-box" class="mt-4 text-sm text-center text-gray-400"></p>
+                    <p class="text-center text-gray-400 text-sm mt-4">
+                        Already have an account? <a href="#" id="show-login-link" class="text-indigo-400 hover:text-indigo-300 font-semibold">Log In</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginContainer = document.getElementById('login-form-container');
+            const signupContainer = document.getElementById('signup-form-container');
+            const showSignupLink = document.getElementById('show-signup-link');
+            const showLoginLink = document.getElementById('show-login-link');
+            const welcomeHeader = document.getElementById('welcome-header');
+            const welcomeMessage = document.getElementById('welcome-message');
+            
+            // Check for URL parameter to determine which form to show
+            const urlParams = new URLSearchParams(window.location.search);
+            const mode = urlParams.get('mode');
+
+            if (mode === 'signup') {
+                showSignupForm();
+            } else {
+                showLoginForm();
+            }
+
+            // Function to show the login form
+            function showLoginForm() {
+                loginContainer.classList.remove('hidden');
+                signupContainer.classList.add('hidden');
+                welcomeHeader.textContent = "WELCOME BACK!";
+                welcomeMessage.textContent = "Hope you and your family have a great day.";
+            }
+
+            // Function to show the signup form
+            function showSignupForm() {
+                signupContainer.classList.remove('hidden');
+                loginContainer.classList.add('hidden');
+                welcomeHeader.textContent = "WELCOME!";
+                welcomeMessage.textContent = "Hope, You and your family have a great day.";
+            }
+
+            // Event listeners to switch between forms
+            showSignupLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showSignupForm();
+            });
+
+            showLoginLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                showLoginForm();
+            });
+        });
+    </script>
+</body>
+</html>
